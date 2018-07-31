@@ -1,0 +1,47 @@
+List <SiteProperties> list = new List <SiteProperties>();
+
+SPOSitePropertiesEnumerable ssp = null;
+SPOSitePropertiesEnumerableFilter sspFilter = new SPOSitePropertiesEnumerableFilter();
+SharePointOnlineCredentials creds = new SharePointOnlineCredentials("myUsernameGoesHere", securePassword);
+
+using (ClientContext cc = new ClientContext("myURLGoesHere"))
+{
+    cc.Credentials = creds;
+
+    String nextIndex = null;
+    Tenant tenant = new Tenant(cc);
+
+    //loop through all site collections including personal sites (even though not being used)
+    //borrowed this code from after decompiling SPO Management Shell assemblies
+    sspFilter.IncludePersonalSite = PersonalSiteFilter.Include;
+    sspFilter.IncludeDetail = true;
+
+    do
+    {
+        sspFilter.StartIndex = nextIndex;
+        ssp = tenant.GetSitePropertiesFromSharePointByFilters(sspFilter);
+
+        cc.Load(ssp);
+        cc.ExecuteQuery();
+
+        list.AddRange(ssp);
+        nextIndex = ssp.NextStartIndexFromSharePoint;
+    }while(nextIndex != null);
+
+    foreach (SiteProperties sp in list)
+    {
+        //DO YOUR WORK HERE FOR EACH SITE COLLECTION, such as looping through subwebs
+        cc.Load(cc.Web, w => w.NoCrawl,
+                                    w => w.Webs,
+                                    w => w.Url);
+        cc.ExecuteQuery();
+
+        //check subweb(s)
+        foreach (var subweb in cc.Web.Webs)
+        {
+            cc.Load(subweb, sw => sw.NoCrawl,
+                                        sw => sw.Url);
+            cc.ExecuteQuery();
+        }
+    }
+}
