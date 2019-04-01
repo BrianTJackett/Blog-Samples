@@ -1,0 +1,116 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "variables": {
+        "Log Analytics Reader Full Role Definition ID": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/', parameters('Log Analytics Reader Role Definition ID'))]",
+        "Workspace Reader Assignment Name": "[concat(parameters('workspaceName'), '/Microsoft.Authorization/', guid(concat(resourceGroup().id), variables('Log Analytics Reader Full Role Definition ID')))]",
+        "Log Analytics Contributor Full Role Definition ID": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/', parameters('Log Analytics Contributor Role Definition ID'))]",
+        "Workspace Contributor Assignment Name": "[concat(parameters('workspaceName'), '/Microsoft.Authorization/', guid(concat(resourceGroup().id), variables('Log Analytics Contributor Full Role Definition ID')))]"
+    },
+    "parameters": {
+        "workspaceName": {
+            "type": "string",
+            "metadata": {
+                "description": "Specifies the name of the Log Analytics workspace."
+            }
+        },
+        "location": {
+            "type": "string",
+            "allowedValues": [
+                "eastus",
+                "westus"
+            ],
+            "defaultValue": "eastus",
+            "metadata": {
+                "description": "Specifies the location in which to create the workspace."
+            }
+        },
+        "logAnalyticsWorkspaceSku": {
+            "type": "string",
+            "allowedValues": [
+                "Standalone",
+                "PerNode",
+                "PerGB2018"
+            ],
+            "defaultValue": "PerGB2018",
+            "metadata": {
+                "description": "Specifies the service tier of the workspace: Standalone, PerNode, Per-GB."
+            }
+        },
+        "workspaceRetentionInDays": {
+            "type": "int",
+            "defaultValue": 30,
+            "metadata": {
+                "description": "Specifies the number of days to retain data in the workspace."
+            }
+        },
+        "LogAnalyticsReaderAadObjectID": {
+            "metadata": {
+                "description": "Object ID of the User, Group or Service Principal."
+            },
+            "type": "string"
+        },
+        "Log Analytics Reader Role Definition ID": {
+            "metadata": {
+                "description": "Identifier (GUID) of the role definition to map to service principal."
+            },
+            "type": "string"
+        },
+        "LogAnalyticsContributorAadObjectID": {
+            "metadata": {
+                "description": "Object ID of the User, Group or Service Principal."
+            },
+            "type": "string"
+        },
+        "Log Analytics Contributor Role Definition ID": {
+            "metadata": {
+                "description": "Identifier (GUID) of the role definition to map to service principal."
+            },
+            "type": "string"
+        }
+    },
+    "resources": [
+        {
+            "type": "Microsoft.OperationalInsights/workspaces",
+            "name": "[parameters('workspaceName')]",
+            "apiVersion": "2015-11-01-preview",
+            "location": "[parameters('location')]",
+            "properties": {
+                "sku": {
+                    "name": "[parameters('logAnalyticsWorkspaceSku')]"
+                },
+                "features": {
+                    "searchVersion": 1
+                },
+                "retentionInDays": "[parameters('workspaceRetentionInDays')]"
+            }
+        },
+        {
+            "condition": "[not(empty(parameters('LogAnalyticsReaderAadObjectID')))]",
+            "type": "Microsoft.OperationalInsights/workspaces/providers/roleAssignments",
+            "apiVersion": "2017-09-01",
+            "name": "[variables('Workspace Reader Assignment Name')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName'))]"
+            ],
+            "properties": {
+                "roleDefinitionId": "[variables('Log Analytics Reader Full Role Definition ID')]",
+                "principalId": "[parameters('LogAnalyticsReaderAadObjectID')]",
+                "mode": "Incremental"
+            }
+        },
+        {
+            "condition": "[not(empty(parameters('LogAnalyticsContributorAadObjectID')))]",
+            "type": "Microsoft.OperationalInsights/workspaces/providers/roleAssignments",
+            "apiVersion": "2017-09-01",
+            "name": "[variables('Workspace Contributor Assignment Name')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName'))]"
+            ],
+            "properties": {
+                "roleDefinitionId": "[variables('Log Analytics Contributor Full Role Definition ID')]",
+                "principalId": "[parameters('LogAnalyticsContributorAadObjectID')]"
+            }
+        }
+    ]
+}

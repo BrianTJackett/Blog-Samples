@@ -1,0 +1,33 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "automationAccountName": {
+            "value": "BTJ-DevOpsDeployTestAA"
+        },
+        "location": {
+            "value": "eastus"
+        },
+        "diagnosticSettingName": {
+            "value": "BTJ-AADiagnostic"
+        },
+        "workspaceName": {
+            "value": "BTJ-DevOpsDeployTestLAW"
+        },
+        "runbookModuleUpdateUri": {
+            "value": "https://btjdeploymentstorage.blob.core.windows.net/runbook-templates/Update-AutomationAzureModulesForAccount.ps1"
+        },
+        "runbookModuleUpdateName": {
+            "value": "Update-AutomationAzureModulesForAccount"
+        },
+        "runbookModuleUpdateDescription": {
+            "value": "Runbook updates the Azure RM modules for the given automation account."
+        },
+        "AutomationJobOperatorRoleDefinitionId": {
+            "value": "4fe576fe-1146-4730-92eb-48519fa6bf9f"
+        },
+        "AutomationJobOperatorAadObjectID": {
+            "value": ""
+        }
+    }
+}

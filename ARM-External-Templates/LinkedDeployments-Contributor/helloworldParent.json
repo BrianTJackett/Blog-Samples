@@ -1,0 +1,99 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "deploymentResourceGroupName": {
+      "type": "string"
+    },
+    "templateStorageContainerUriRoot": {
+      "type": "string"
+    },
+    "parameterStorageContainerUriRoot": {
+      "type": "string"
+    }
+  },
+  "variables": {},
+  "resources": [
+    {
+      "apiVersion": "2017-05-10",
+      "name": "linkedTemplateStorage",
+      "type": "Microsoft.Resources/deployments",
+      "resourceGroup": "[parameters('deploymentResourceGroupName')]",
+      "comments": "Deploy storage account for queues and general storage",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(parameters('templateStorageContainerUriRoot'), 'helloworldStorage.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parametersLink": {
+          "uri": "[concat(parameters('parameterStorageContainerUriRoot'), 'helloworldStorage.parameters.json')]",
+          "contentVersion": "1.0.0.0"
+        }
+      },
+      "dependsOn": []
+    },
+    {
+      "apiVersion": "2017-05-10",
+      "name": "linkedTemplateAzureFunction",
+      "type": "Microsoft.Resources/deployments",
+      "resourceGroup": "[parameters('deploymentResourceGroupName')]",
+      "comments": "Deploy Azure Function for durable orchestrator",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(parameters('templateStorageContainerUriRoot'), 'helloworldApp.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parametersLink": {
+          "uri": "[concat(parameters('parameterStorageContainerUriRoot'), 'helloworldApp.parameters.json')]",
+          "contentVersion": "1.0.0.0"
+        }
+      },
+      "dependsOn": [
+        "linkedTemplateStorage"
+      ]
+    },
+    {
+      "apiVersion": "2017-05-10",
+      "name": "linkedTemplateLogAnalyticsWorkspace",
+      "type": "Microsoft.Resources/deployments",
+      "resourceGroup": "[parameters('deploymentResourceGroupName')]",
+      "comments": "Deploy Log Analytics workspace for operational logging",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(parameters('templateStorageContainerUriRoot'), 'helloworldLogAnalyticsWorkspace.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parametersLink": {
+          "uri": "[concat(parameters('parameterStorageContainerUriRoot'), 'helloworldLogAnalyticsWorkspace.parameters.json')]",
+          "contentVersion": "1.0.0.0"
+        }
+      },
+      "dependsOn": []
+    },
+    {
+      "apiVersion": "2017-05-10",
+      "name": "linkedTemplateAutomationAccount",
+      "type": "Microsoft.Resources/deployments",
+      "resourceGroup": "[parameters('deploymentResourceGroupName')]",
+      "comments": "Deploy Automation Account for running jobs",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(parameters('templateStorageContainerUriRoot'), 'helloworldAutomationAccount.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parametersLink": {
+          "uri": "[concat(parameters('parameterStorageContainerUriRoot'), 'helloworldAutomationAccount.parameters.json')]",
+          "contentVersion": "1.0.0.0"
+        }
+      },
+      "dependsOn": [
+        "linkedTemplateLogAnalyticsWorkspace"
+      ]
+    }
+  ],
+  "outputs": {}
+}

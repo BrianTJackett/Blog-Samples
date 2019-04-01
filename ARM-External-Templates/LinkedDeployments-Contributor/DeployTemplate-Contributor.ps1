@@ -1,0 +1,1 @@
+New-AzureRmResourceGroupDeployment -Name BTJPSDeploy -ResourceGroupName "BTJ-DevOpsDeployTestRG" -Mode "Incremental" -TemplateFile .\helloworldParent.json -TemplateParameterFile .\helloworldParent.parameters.json

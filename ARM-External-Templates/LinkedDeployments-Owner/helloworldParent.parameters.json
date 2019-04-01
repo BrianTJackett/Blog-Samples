@@ -1,0 +1,18 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": {
+      "value": "eastus"
+    },
+    "resourceGroupName": {
+      "value": "BTJ-DevOpsDeployTestRG"
+    },
+    "templateStorageContainerUriRoot": {
+      "value": "https://btjdeploymentstorage.blob.core.windows.net/arm-templates/"
+    },
+    "parameterStorageContainerUriRoot": {
+      "value": "https://btjdeploymentstorage.blob.core.windows.net/arm-templates/"
+    }
+  }
+}

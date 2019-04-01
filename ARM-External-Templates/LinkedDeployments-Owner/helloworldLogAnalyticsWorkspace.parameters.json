@@ -1,0 +1,30 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "workspaceName": {
+      "value": "BTJ-DevOpsDeployTestLAW"
+    },
+    "location": {
+      "value": "eastus"
+    },
+    "logAnalyticsWorkspaceSku": {
+      "value": "PerGB2018"
+    },
+    "workspaceRetentionInDays": {
+      "value": 30
+    },
+    "LogAnalyticsContributorAadObjectID": {
+      "value": ""
+    },
+    "Log Analytics Contributor Role Definition ID": {
+      "value": "73c42c96-874c-492b-b04d-ab87d138a893"
+    },
+    "LogAnalyticsReaderAadObjectID": {
+      "value": ""
+    },
+    "Log Analytics Reader Role Definition ID": {
+      "value": "92aaf0da-9dab-42b6-94a3-d43ce8d16293"
+    }
+  }
+}

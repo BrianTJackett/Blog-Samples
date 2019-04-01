@@ -1,0 +1,116 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "automationAccountName": {
+            "type": "string"
+        },
+        "location": {
+            "type": "string"
+        },
+        "diagnosticSettingName": {
+            "type": "string"
+        },
+        "workspaceName": {
+            "type": "string"
+        },
+        "runbookModuleUpdateUri": {
+            "type": "string"
+        },
+        "runbookModuleUpdateName": {
+            "type": "string"
+        },
+        "runbookModuleUpdateDescription": {
+            "type": "string"
+        },
+        "AutomationJobOperatorRoleDefinitionId": {
+            "type": "string"
+        },
+        "AutomationJobOperatorAadObjectID": {
+            "type": "string"
+        }
+    },
+    "variables": {
+        "AA Name": "[parameters('automationAccountName')]",
+        "AA Assignment Name" : "[concat(variables('AA Name'), '/Microsoft.Authorization/', guid(concat(resourceGroup().id), variables('Full Role Definition ID')))]",
+        "Full Role Definition ID": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/', parameters('AutomationJobOperatorRoleDefinitionId'))]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Automation/automationAccounts",
+            "name": "[parameters('automationAccountName')]",
+            "apiVersion": "2015-01-01-preview",
+            "location": "[parameters('location')]",
+            "tags": {},
+            "properties": {
+                "sku": {
+                    "name": "Basic"
+                }
+            },
+            "dependsOn": [],
+            "resources": [
+                {
+                    "type": "runbooks",
+                    "name": "[parameters('runbookModuleUpdateName')]",
+                    "apiVersion": "2015-10-31",
+                    "location": "[parameters('location')]",
+                    "properties": {
+                        "runbookType": "PowerShell",
+                        "logProgress": "false",
+                        "logVerbose": "false",
+                        "description": "[parameters('runbookModuleUpdateDescription')]",
+                        "publishContentLink": {
+                            "uri": "[parameters('runbookModuleUpdateUri')]",
+                            "version": "1.0.0.0"
+                        }
+                    },
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Automation/automationAccounts/', parameters('automationAccountName'))]"
+                    ]
+                },
+                {
+                    "type": "providers/diagnosticSettings",
+                    "name": "[concat('Microsoft.Insights/', parameters('diagnosticSettingName'))]",
+                    "apiVersion": "2017-05-01-preview",
+                    "properties": {
+                        "name": "[parameters('diagnosticSettingName')]",
+                        "workspaceId": "[concat('/subscriptions/',subscription().subscriptionId,'/resourcegroups/',resourceGroup().name,'/providers/microsoft.operationalinsights/workspaces/',parameters('workspaceName'))]",
+                        "logs": [
+                            {
+                                "category": "JobStreams",
+                                "enabled": true,
+                                "retentionPolicy": {
+                                    "days": 0,
+                                    "enabled": false
+                                }
+                            },
+                            {
+                                "category": "JobLogs",
+                                "enabled": true,
+                                "retentionPolicy": {
+                                    "days": 0,
+                                    "enabled": false
+                                }
+                            }
+                        ],
+                        "metrics": []
+                    },
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Automation/automationAccounts/', parameters('automationAccountName'))]"
+                    ]
+                }
+            ]
+        },
+        {
+        "condition": "[not(empty(parameters('AutomationJobOperatorAadObjectID')))]",
+            "type": "Microsoft.Automation/automationAccounts/providers/roleAssignments",
+            "apiVersion": "2017-05-01",
+            "name": "[variables('AA Assignment Name')]",
+            "properties": {
+              "roleDefinitionId": "[variables('Full Role Definition ID')]",
+              "principalId": "[parameters('AutomationJobOperatorAadObjectID')]"
+            },
+            "dependsOn": ["[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccountName'))]"]
+        }
+    ]
+}
