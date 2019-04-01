@@ -5,7 +5,7 @@
     "location": {
       "value": "eastus"
     },
-    "resourceGroupName": {
+    "deploymentResourceGroupName": {
       "value": "BTJ-DevOpsDeployTestRG"
     },
     "templateStorageContainerUriRoot": {

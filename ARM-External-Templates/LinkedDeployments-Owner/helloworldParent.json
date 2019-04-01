@@ -6,7 +6,7 @@
       "type": "string",
       "defaultValue": "eastus"
     },
-    "resourceGroupName": {
+    "deploymentResourceGroupName": {
       "type": "string"
     },
     "templateStorageContainerUriRoot": {
@@ -22,14 +22,14 @@
       "type": "Microsoft.Resources/resourceGroups",
       "apiVersion": "2018-05-01",
       "location": "[parameters('location')]",
-      "name": "[parameters('resourceGroupName')]",
+      "name": "[parameters('deploymentResourceGroupName')]",
       "properties": {}
     },
     {
       "apiVersion": "2017-05-10",
       "name": "linkedTemplateStorage",
       "type": "Microsoft.Resources/deployments",
-      "resourceGroup": "[parameters('resourceGroupName')]",
+      "resourceGroup": "[parameters('deploymentResourceGroupName')]",
       "comments": "Deploy storage account for queues and general storage",
       "properties": {
         "mode": "Incremental",
@@ -43,14 +43,14 @@
         }
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Resources/resourceGroups/', parameters('resourceGroupName'))]"
+        "[resourceId('Microsoft.Resources/resourceGroups/', parameters('deploymentResourceGroupName'))]"
       ]
     },
     {
       "apiVersion": "2017-05-10",
       "name": "linkedTemplateAzureFunction",
       "type": "Microsoft.Resources/deployments",
-      "resourceGroup": "[parameters('resourceGroupName')]",
+      "resourceGroup": "[parameters('deploymentResourceGroupName')]",
       "comments": "Deploy Azure Function for durable orchestrator",
       "properties": {
         "mode": "Incremental",
@@ -65,14 +65,14 @@
       },
       "dependsOn": [
         "linkedTemplateStorage",
-        "[resourceId('Microsoft.Resources/resourceGroups/', parameters('resourceGroupName'))]"
+        "[resourceId('Microsoft.Resources/resourceGroups/', parameters('deploymentResourceGroupName'))]"
       ]
     },
     {
       "apiVersion": "2017-05-10",
       "name": "linkedTemplateLogAnalyticsWorkspace",
       "type": "Microsoft.Resources/deployments",
-      "resourceGroup": "[parameters('resourceGroupName')]",
+      "resourceGroup": "[parameters('deploymentResourceGroupName')]",
       "comments": "Deploy Log Analytics workspace for operational logging",
       "properties": {
         "mode": "Incremental",
@@ -86,14 +86,14 @@
         }
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Resources/resourceGroups/', parameters('resourceGroupName'))]"
+        "[resourceId('Microsoft.Resources/resourceGroups/', parameters('deploymentResourceGroupName'))]"
       ]
     },
     {
       "apiVersion": "2017-05-10",
       "name": "linkedTemplateAutomationAccount",
       "type": "Microsoft.Resources/deployments",
-      "resourceGroup": "[parameters('resourceGroupName')]",
+      "resourceGroup": "[parameters('deploymentResourceGroupName')]",
       "comments": "Deploy Automation Account for running jobs",
       "properties": {
         "mode": "Incremental",
@@ -108,7 +108,7 @@
       },
       "dependsOn": [
         "linkedTemplateLogAnalyticsWorkspace",
-        "[resourceId('Microsoft.Resources/resourceGroups/', parameters('resourceGroupName'))]"
+        "[resourceId('Microsoft.Resources/resourceGroups/', parameters('deploymentResourceGroupName'))]"
       ]
     }
   ],
