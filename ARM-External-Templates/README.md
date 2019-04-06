@@ -2,14 +2,14 @@
 
 ## Scenarios
 
-- [LinkedDeployments-Contributor](.\LinkedDeployments-Contributor)
-- [LinkedDeployments-Owner](.\LinkedDeployments-Owner)
+- [LinkedDeployments-Contributor](LinkedDeployments-Contributor)
+- [LinkedDeployments-Owner](LinkedDeployments-Owner)
 
 ### Expectations
 
-- [LinkedDeployments-Contributor](.\LinkedDeployments-Contributor) assumes that the deployment account only has **contributor** rights to a specific resource group (or subscription).  This is the more common deployment scenario.
+- [LinkedDeployments-Contributor](LinkedDeployments-Contributor) assumes that the deployment account only has **contributor** rights to a specific resource group (or subscription).  This is the more common deployment scenario.
 
-- [LinkedDeployments-Owner](.\LinkedDeployments-Owner) assumes that the deployment account has **owner** rights to a subscription.  This is a less common deployment scenario (possibly development environment) as that account will be highly privilaged and have access to all resource groups.
+- [LinkedDeployments-Owner](LinkedDeployments-Owner) assumes that the deployment account has **owner** rights to a subscription.  This is a less common deployment scenario (possibly development environment) as that account will be highly privilaged and have access to all resource groups.
 
 - AzureRM.* PowerShell modules have been installed (or AZ.* modules with the Enable-AzureRMAlias command run).
 
