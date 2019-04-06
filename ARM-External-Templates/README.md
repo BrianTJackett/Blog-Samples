@@ -20,5 +20,6 @@
 
     > **Note:** A more secure approach would be to update the **templateStorageContainerUriRoot** and **parametersStorageContainerUriRoot** parameters in `helloworldParent.parameters.json` file to use a SAS token to the storage account instead of assigning public blob read access.  This would require updating the SAS token frequently or using a long lived token.
 
+1. Update `DeployTemplate-Contributor.ps1` or `DeployTemplate-Owner.ps1` with the appropriate region, resource group name (only for Contributor scenario), and deployment name.
 1. Login to Azure PowerShell to the subscription desired.
 1. Run `DeployTemplate-Contributor.ps1` or `DeployTemplate-Owner.ps1` from the context of the folder desired.
