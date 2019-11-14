@@ -1,0 +1,65 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "vault_name": {
+      "type": "String"
+    },
+    "userManagedIdentity_name":{
+      "type": "String"
+    }
+  },
+  "variables": {
+    "location": "[resourceGroup().location]",
+    "tenantId": "[subscription().tenantid]",
+    "vault_name": "[parameters('vault_name')]",
+    "userManagedIdentity_name": "[parameters('userManagedIdentity_name')]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
+      "name": "[variables('userManagedIdentity_name')]",
+      "apiVersion": "2018-11-30",
+      "location": "[variables('location')]",
+      "properties": {
+      }
+    },
+    {
+      "type": "Microsoft.KeyVault/vaults",
+      "name": "[variables('vault_name')]",
+      "apiVersion": "2016-10-01",
+      "location": "[variables('location')]",
+      "scale": null,
+      "properties": {
+        "sku": {
+          "family": "A",
+          "name": "standard"
+        },
+        "tenantId": "[variables('tenantId')]",
+        "accessPolicies": [
+          {
+            "tenantId": "[variables('tenantId')]",
+            "objectId": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('userManagedIdentity_name'))).principalId]",
+            "permissions": {
+              "keys": [
+                "get"
+              ],
+              "secrets": [
+                "get"
+              ],
+              "certificates": [
+                "get"
+              ]
+            }
+          }
+        ],
+        "enabledForDeployment": false,
+        "enabledForDiskEncryption": false,
+        "enabledForTemplateDeployment": false
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('userManagedIdentity_name'))]"
+      ]
+    }
+  ]
+}
